@@ -1,133 +1,73 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MD5 Hash Checker - Herramienta CTF</title>
-    <!-- Carga de Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos de Terminal Consistentes */
-        body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #0d1117; 
-            color: #00ff00; 
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            border: 1px solid #00ff0033; 
-            box-shadow: 0 0 20px #00ff0044; 
-        }
-        .terminal-header {
-            background-color: #161b22;
-            color: #ffffff;
-            font-weight: bold;
-            border-bottom: 1px solid #00ff0033;
-        }
-        .message-box {
-            min-height: 4rem; 
-        }
-    </style>
-    <!-- Script para generar MD5 en el cliente (necesario para el crack) -->
-    <script src="https://cdn.jsdelivr.net/npm/md5@2.3.0/md5.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CiberEscape — Herramienta de cracking MD5</title>
+<link rel="icon" type="image/png" href="icono.png">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  (function () {
+    var t = null; try { t = localStorage.getItem('ce_theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 </head>
-<body class="p-4">
-    <div class="container w-full max-w-lg p-6 md:p-8 rounded-lg">
-        <div class="terminal-header p-2 rounded-t-lg flex justify-between items-center">
-            <span>Herramienta_MD5.exe - Descifrador de Hash</span>
-            <div class="space-x-1">
-                <span class="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
-                <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span>
-                <span class="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
-            </div>
-        </div>
+<body>
 
-        <div class="p-6">
-            <h1 class="text-2xl font-bold mb-4 text-white">Descifrador de Hash (Ataque de Diccionario)</h1>
-            <p class="mb-6 text-gray-300">
-                Usa esta herramienta para probar si una palabra clave coincide con el hash MD5 que encontraste en el código fuente.
-            </p>
+<header class="brandbar">
+  <a class="brand" href="https://www.unfantasmaenelsistema.com" target="_blank" rel="noopener">
+    <img src="icono.png" alt="Un Fantasma en el Sistema" width="40" height="40">
+    <span><b>CIBERESCAPE</b><small data-t="brandSub">UN FANTASMA EN EL SISTEMA</small></span>
+  </a>
+  <nav class="controls">
+    <a class="chip" href="https://www.unfantasmaenelsistema.com" target="_blank" rel="noopener">WEB</a>
+    <button class="chip" id="langBtn" type="button">EN</button>
+    <button class="chip" id="themeBtn" type="button">☀</button>
+  </nav>
+</header>
 
-            <div class="mt-6">
-                <label for="targetHash" class="block text-sm font-medium mb-2 text-cyan-300">Hash MD5 Objetivo (Pégalo aquí):</label>
-                <input type="text" id="targetHash" placeholder="0702F2358826D9C6E3B5641753177759" 
-                       class="w-full p-3 rounded bg-gray-800 text-yellow-300 border border-gray-700 focus:ring-green-500 focus:border-green-500 uppercase" 
-                       autocomplete="off">
-            </div>
-            
-            <div class="mt-4">
-                <label for="wordToTest" class="block text-sm font-medium mb-2 text-cyan-300">Palabra Clave a Probar:</label>
-                <input type="text" id="wordToTest" placeholder="Ej: Password_10" 
-                       class="w-full p-3 rounded bg-gray-800 text-yellow-300 border border-gray-700 focus:ring-green-500 focus:border-green-500">
-            </div>
+<main class="window">
+  <div class="titlebar"><span data-t="crackerWin">Herramienta_MD5.exe — Descifrador de hash</span><span class="dots"><span></span><span></span><span></span></span></div>
+  <div class="content">
+    <h1 data-t="crackerH1">Descifrador de hash MD5</h1>
+    <p class="lead" data-th="crackerLead"></p>
 
-            <button onclick="crackHash()" 
-                    class="mt-6 w-full bg-red-700 hover:bg-red-600 text-white font-bold py-3 px-4 rounded transition-colors duration-200">
-                Probar Palabra (Crack)
-            </button>
+    <label for="targetHash" data-t="targetLabel">Hash MD5 objetivo:</label>
+    <input type="text" id="targetHash" class="upper" data-tp="targetPh" autocomplete="off" spellcheck="false" maxlength="40">
 
-            <div id="message" class="message-box mt-4 p-3 rounded text-center text-sm font-semibold transition-all">
-                &nbsp;
-            </div>
-
-            <div class="mt-6 text-center">
-                <a href="index.html" class="text-sm text-gray-500 hover:text-gray-300 transition-colors">Volver al Centro de Comando</a>
-            </div>
-        </div>
+    <div class="card">
+      <div class="title" data-t="dictTitle">Ataque de diccionario</div>
+      <p id="dictText"></p>
+      <button class="btn red" id="dictBtn" type="button" data-t="runDict">▶ Lanzar ataque de diccionario</button>
+      <div class="log" id="log" aria-live="off"></div>
     </div>
 
-    <script>
-        const MESSAGE_BOX = document.getElementById('message');
-        const TARGET_HASH_INPUT = document.getElementById('targetHash');
-        const WORD_INPUT = document.getElementById('wordToTest');
+    <label for="wordToTest" data-t="wordLabel">Probar una palabra concreta:</label>
+    <div class="row">
+      <input type="text" id="wordToTest" data-tp="wordPh" autocomplete="off" spellcheck="false">
+    </div>
+    <button class="btn" id="tryBtn" type="button" data-t="tryWord">Probar palabra</button>
 
-        // El hash objetivo del Desafío 1 (MD5 de S3CURITY10)
-        const CHALLENGE_HASH = "0702F2358826D9C6E3B5641753177759";
+    <div id="message" class="msg" aria-live="polite">&nbsp;</div>
 
-        // Establecer el hash objetivo por defecto para comodidad
-        document.addEventListener('DOMContentLoaded', () => {
-            TARGET_HASH_INPUT.value = CHALLENGE_HASH;
-        });
+    <a class="btn ghost" href="index.html" data-t="back">← Volver al centro de comando</a>
+  </div>
+</main>
 
-        /**
-         * Simula un ataque de diccionario al generar el hash MD5 de la palabra
-         * de prueba y compararlo con el hash objetivo.
-         */
-        async function crackHash() {
-            const targetHash = TARGET_HASH_INPUT.value.trim().toUpperCase();
-            const word = WORD_INPUT.value.trim();
+<footer>
+  <span data-t="footer"></span>
+  <span class="links">
+    <a href="https://ghostore.unfantasmaenelsistema.com/" target="_blank" rel="noopener">GhoStore</a>
+    <a href="https://github.com/unfantasmaenelsistema/CiberEscape" target="_blank" rel="noopener" data-t="source">Código fuente</a>
+  </span>
+</footer>
 
-            if (!word || !targetHash) {
-                MESSAGE_BOX.textContent = "Por favor, introduce el hash y la palabra a probar.";
-                MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-red-900 text-red-300 shadow-lg shadow-red-900/50';
-                return;
-            }
-
-            MESSAGE_BOX.textContent = `Probando la palabra "${word}"...`;
-            MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-gray-700 text-white transition-all';
-            
-            await new Promise(resolve => setTimeout(resolve, 800)); 
-
-            // Generar el hash de la palabra de prueba (usando la librería MD5)
-            // Lo probamos en mayúsculas y minúsculas por si acaso
-            const hashedWord = md5(word).toUpperCase();
-            const hashedWordLower = md5(word.toLowerCase()).toUpperCase();
-
-            if (hashedWord === targetHash || hashedWordLower === targetHash) {
-                // Éxito: La palabra ha coincidido (caso en que la solución es S3CURITY10)
-                MESSAGE_BOX.innerHTML = `¡COINCIDENCIA ENCONTRADA! La palabra clave es: <code class="text-yellow-300">${word}</code>. Usa esta clave en el Centro de Comando.`;
-                MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-green-900 text-green-300 shadow-lg shadow-green-900/50';
-                
-            } else {
-                // Fallo
-                 MESSAGE_BOX.textContent = `La palabra "${word}" generó el hash ${hashedWord}. No coincide con el objetivo.`;
-                 MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-red-900 text-red-300 shadow-lg shadow-red-900/50';
-            }
-        }
-    </script>
+<script src="js/i18n.js"></script>
+<script src="js/common.js"></script>
+<script src="js/md5.js"></script>
+<script src="js/cracker.js"></script>
 </body>
 </html>

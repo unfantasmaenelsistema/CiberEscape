@@ -1,0 +1,10 @@
+# config.txt — copia de seguridad (NO PUBLICAR)
+# Generado: 2023-11-02 por admin
+[database]
+host     = 10.10.10.30
+user     = app_rw
+password = Ch4ng3M3_pls
+[validation]
+VALIDATION_CODE = CONFIG_FAIL
+[notes]
+# Si lees esto desde Internet, alguien ha olvidado borrar la copia.
