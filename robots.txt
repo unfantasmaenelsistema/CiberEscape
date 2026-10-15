@@ -1,0 +1,4 @@
+# robots.txt — CorpTarget Command Center
+User-agent: *
+Disallow: /backup/
+# TODO (admin): borrar backup/config.txt antes de publicar

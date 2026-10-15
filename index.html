@@ -1,182 +1,93 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escape Room: Centro de Comando (Desafío CTF)</title>
-    <!-- Carga de Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        /* Estilos de Terminal Consistentes */
-        body {
-            font-family: 'Roboto Mono', monospace;
-            background-color: #0d1117; 
-            color: #00ff00; 
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            border: 1px solid #00ff0033; 
-            box-shadow: 0 0 20px #00ff0044; 
-        }
-        .terminal-header {
-            background-color: #161b22;
-            color: #ffffff;
-            font-weight: bold;
-            border-bottom: 1px solid #00ff0033;
-        }
-        .message-box {
-            min-height: 4rem; 
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CiberEscape — Centro de Comando</title>
+<meta name="description" content="Escape room de ciberseguridad: cinco desafíos (hashes, CVE, Base64, CWE y fallos de configuración) resueltos investigando la propia web.">
+<meta property="og:title" content="CiberEscape — Un Fantasma en el Sistema">
+<meta property="og:description" content="Escape room de ciberseguridad en el navegador: cinco códigos, técnicas reales.">
+<meta property="og:image" content="https://unfantasmaenelsistema.github.io/CiberEscape/icono.png">
+<link rel="icon" type="image/png" href="icono.png">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  (function () {
+    var t = null; try { t = localStorage.getItem('ce_theme'); } catch (e) {}
+    if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 </head>
-<body class="p-4" onload="updateChallengeUI()">
-    <div class="container w-full max-w-lg p-6 md:p-8 rounded-lg">
-        <div class="terminal-header p-2 rounded-t-lg flex justify-between items-center">
-            <span>Escapar.exe - Módulo de Validación</span>
-            <div class="space-x-1">
-                <span class="inline-block w-3 h-3 bg-red-500 rounded-full"></span>
-                <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full"></span>
-                <span class="inline-block w-3 h-3 bg-green-500 rounded-full"></span>
-            </div>
-        </div>
+<body>
 
-        <div class="p-6">
-            <h1 class="text-3xl font-bold mb-4 text-white">Prueba del Analista</h1>
-            <div class="mb-6">
-                <a href="hash_cracker.html" class="inline-block bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded transition-colors border border-blue-400">
-                    🛠️ Abrir Herramienta de Cracking
-                </a>
-            </div>
-            <div class="p-3 rounded bg-gray-800 border border-gray-700 mb-6">
-                <p class="text-sm text-white">
-                    Desafío Actual: 
-                    <span id="challengeTitle" class="font-bold text-yellow-400"></span>
-                </p>
-                <p class="text-xs text-gray-400 mt-1">
-                    Progreso: <span id="challengeProgress">1 de 5</span>
-                </p>
-            </div>
+<header class="brandbar">
+  <a class="brand" href="https://www.unfantasmaenelsistema.com" target="_blank" rel="noopener">
+    <img src="icono.png" alt="Un Fantasma en el Sistema" width="40" height="40">
+    <span><b>CIBERESCAPE</b><small data-t="brandSub">UN FANTASMA EN EL SISTEMA</small></span>
+  </a>
+  <nav class="controls">
+    <a class="chip" href="https://www.unfantasmaenelsistema.com" target="_blank" rel="noopener">WEB</a>
+    <button class="chip" id="langBtn" type="button">EN</button>
+    <button class="chip" id="themeBtn" type="button">☀</button>
+  </nav>
+</header>
 
-            <p id="currentHint" class="mb-6 text-cyan-300">
-                <!-- El texto de la Pista 1 debe ser impreso físicamente según el plan -->
-                ¡Busca la Pista 1 impresa en tu mesa para comenzar la investigación!
-            </p>
-            
-            <!-- Entrada para introducir los códigos -->
-            <div class="mt-6">
-                <label for="codeInput" class="block text-sm font-medium mb-2 text-cyan-300">Introduce el Código de Validación:</label>
-                <input type="text" id="codeInput" placeholder="CÓDIGO_A_VALIDAR" 
-                       class="w-full p-3 rounded bg-gray-800 text-yellow-300 border border-gray-700 focus:ring-green-500 focus:border-green-500 uppercase" 
-                       autocomplete="off">
-            </div>
+<main class="window">
+  <div class="titlebar"><span data-t="winTitle">Escapar.exe — Módulo de validación</span><span class="dots"><span></span><span></span><span></span></span></div>
+  <div class="content">
+    <h1 data-t="h1">Prueba del analista</h1>
+    <p class="lead" data-t="lead"></p>
 
-            <button onclick="validateCode()" 
-                    class="mt-4 w-full bg-green-700 hover:bg-green-600 text-white font-bold py-3 px-4 rounded transition-colors duration-200">
-                Validar Código
-            </button>
+    <a href="hash_cracker.html" class="btn blue" data-t="openCracker">🛠️ Abrir la herramienta de cracking</a>
 
-            <div id="message" class="message-box mt-4 p-3 rounded text-center text-sm font-semibold transition-all">
-                &nbsp;
-            </div>
+    <div class="progress" id="progress" aria-hidden="true"></div>
+    <div class="meta"><span id="progressText"></span><span id="timeText"></span><span id="hintsText"></span></div>
 
-            <div class="mt-6 text-center">
-                <p class="text-sm text-gray-500">CTF Security Challenge 2025</p>
-            </div>
-        </div>
-    </div>
+    <section id="play">
+      <div class="card">
+        <div class="label" data-t="current">Desafío actual</div>
+        <div class="title" id="chTitle"></div>
+        <p class="clue" id="chClue"></p>
+        <p class="extra" id="chExtra" hidden></p>
+        <button class="btn ghost" id="hintBtn" type="button" data-t="showHint">Mostrar pista extra</button>
+      </div>
 
-    <script>
-        // --- 1. CONFIGURACIÓN DEL JUEGO (Basado en el plan) ---
-        const FINAL_FLAG = "FINAL_FLAG{INV3ST1GAC1ON_Y_CR4CK1NG_L0GRAD0}";
-        
-        const CHALLENGES = [
-            // DESAFÍO 1: Hash MD5 de 'S3CURITY10' se encuentra en el código fuente.
-            { id: 1, theme: "Criptografía / Hashes", expected: "S3CURITY10", nextHint: "¡Hash descifrado! Busca un fallo en el software de correo 'MailServer v5.0.1'. Necesitas el código CVE." },
-            // DESAFÍO 2: Búsqueda del CVE por nombre de software.
-            { id: 2, theme: "Búsqueda de Vulnerabilidades (CVE)", expected: "CVE-2024-1234", nextHint: "¡CVE encontrado! La siguiente clave está codificada en Base64 en un archivo JS externo (external.js). Decodifícala para obtener la API Key." },
-            // DESAFÍO 3: Decodificación Base64 de la API Key.
-            { id: 3, theme: "Codificación / API Key (Base64)", expected: "APIKEY_DECODE", nextHint: "¡API Key decodificada! Ahora, identifica el código CWE que corresponde a una 'Inyección XSS Reflejada'." },
-            // DESAFÍO 4: Búsqueda del código CWE para XSS Reflejada.
-            { id: 4, theme: "Debilidades Comunes (CWE)", expected: "CWE-79", nextHint: "¡CWE identificado! El último código está en un archivo de configuración olvidado y sin protección: 'config.txt'. Búscalo en la raíz del servidor." },
-            // DESAFÍO 5: Simulación de fallo de configuración (acceso a config.txt).
-            { id: 5, theme: "Fallo de Configuración", expected: "CONFIG_FAIL", nextHint: FINAL_FLAG }
-        ];
+      <label for="codeInput" data-t="inputLabel">Introduce el código de validación:</label>
+      <input type="text" id="codeInput" class="upper" placeholder="CÓDIGO_A_VALIDAR" autocomplete="off" spellcheck="false">
+      <button class="btn" id="validateBtn" type="button" data-t="validate">Validar código</button>
+      <div id="message" class="msg" aria-live="polite">&nbsp;</div>
+    </section>
 
-        // --- 2. ESTADO DEL JUEGO ---
-        // Usamos localStorage para simular el progreso entre recargas
-        let currentChallengeId = parseInt(localStorage.getItem('currentChallengeId')) || 1;
-        let currentChallenge = CHALLENGES.find(c => c.id === currentChallengeId) || CHALLENGES[0];
+    <section id="done" hidden>
+      <div class="card">
+        <div class="title" data-t="doneTitle">¡HAS ESCAPADO!</div>
+        <p id="doneText"></p>
+        <div class="flag" id="flag"></div>
+      </div>
+    </section>
 
-        // --- 3. ELEMENTOS DEL DOM ---
-        const MESSAGE_BOX = document.getElementById('message');
-        const CODE_INPUT = document.getElementById('codeInput');
-        const CHALLENGE_TITLE = document.getElementById('challengeTitle');
-        const CHALLENGE_PROGRESS = document.getElementById('challengeProgress');
-        const CURRENT_HINT = document.getElementById('currentHint');
+    <button class="btn ghost" id="resetBtn" type="button" data-t="reset">Reiniciar la partida</button>
+  </div>
+</main>
 
-        /**
-         * Inicializa o actualiza la interfaz de usuario con el estado del desafío actual.
-         */
-        function updateChallengeUI() {
-            if (currentChallengeId > 5) {
-                CHALLENGE_TITLE.textContent = "COMPLETADO";
-                CHALLENGE_PROGRESS.textContent = "5 de 5";
-                CURRENT_HINT.innerHTML = `<span class="text-lg font-bold text-green-400">¡ESCAPASTE! La Bandera Maestra es: ${FINAL_FLAG}</span>`;
-                CODE_INPUT.disabled = true;
-            } else {
-                currentChallenge = CHALLENGES.find(c => c.id === currentChallengeId);
-                CHALLENGE_TITLE.textContent = currentChallenge.theme;
-                CHALLENGE_PROGRESS.textContent = `${currentChallengeId} de 5`;
-                if (currentChallengeId > 1) {
-                    // Muestra la pista del desafío anterior para guiar al siguiente.
-                    CURRENT_HINT.textContent = currentChallenge.nextHint;
-                }
-            }
-        }
+<footer>
+  <span data-t="footer"></span>
+  <span class="links">
+    <a href="https://ghostore.unfantasmaenelsistema.com/" target="_blank" rel="noopener">GhoStore</a>
+    <a href="https://github.com/unfantasmaenelsistema/CiberEscape" target="_blank" rel="noopener" data-t="source">Código fuente</a>
+    <a href="https://github.com/unfantasmaenelsistema/CiberEscape/blob/main/writeup/WRITEUP.md" target="_blank" rel="noopener" data-t="writeup">Writeup (spoilers)</a>
+  </span>
+</footer>
 
-        /**
-         * Valida el código introducido por el usuario.
-         */
-        async function validateCode() {
-            const input = CODE_INPUT.value.trim().toUpperCase();
-            
-            MESSAGE_BOX.textContent = "Verificando...";
-            MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-gray-700 text-white transition-all';
-            
-            await new Promise(resolve => setTimeout(resolve, 500)); 
-
-            if (currentChallengeId > 5) {
-                MESSAGE_BOX.textContent = "Juego ya completado. ¡Has ganado!";
-                MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-green-900 text-green-300';
-                return;
-            }
-
-            if (input === currentChallenge.expected) {
-                // Éxito: Avanzar al siguiente desafío
-                MESSAGE_BOX.textContent = `¡Código ${currentChallengeId} validado! Avanzando al siguiente desafío.`;
-                MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-green-900 text-green-300 shadow-lg shadow-green-900/50';
-
-                currentChallengeId++;
-                localStorage.setItem('currentChallengeId', currentChallengeId);
-                CODE_INPUT.value = '';
-                
-                // Actualizar UI con el nuevo estado y la nueva pista
-                setTimeout(updateChallengeUI, 1000);
-
-            } else {
-                // Fallo
-                 MESSAGE_BOX.textContent = "Código Incorrecto. ¡Sigue investigando!";
-                 MESSAGE_BOX.className = 'message-box mt-4 p-3 rounded text-center text-sm font-semibold bg-red-900 text-red-300 shadow-lg shadow-red-900/50';
-            }
-        }
-    </script>
+<script src="js/i18n.js"></script>
+<script src="js/common.js"></script>
+<script src="js/telemetry.js"></script>
+<script src="js/game.js"></script>
 </body>
 <!-- *************************************************************** -->
-<!-- CLAVE DE ACCESO DEL DESAFÍO 1 (HASH MD5 para 'S3CURITY10'): -->
-<!-- 0702F2358826D9C6E3B5641753177759 -->
+<!-- TODO admin: quitar antes de producción                           -->
+<!-- Hash MD5 de la contraseña del buzón de administración:           -->
+<!-- 5A9E7897E742752A83F2627CCB4AAEE6                                 -->
 <!-- *************************************************************** -->
 </html>
